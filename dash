@@ -6,8 +6,8 @@ app = dash.Dash(__name__)
 
 # 示例数据
 data = [
-    {'Column 1': 'This is a long text that will wrap into multiple lines automatically', 'Column 2': 'Short text'},
-    {'Column 1': 'Another long text that needs to wrap', 'Column 2': 'Another short one'}
+    {'Column 1': 'This is a long text that will not wrap', 'Column 2': 'This is a long text that will wrap into multiple lines automatically.'},
+    {'Column 1': 'Another long text that stays in one line', 'Column 2': 'Another long text that needs to wrap in Column 2.'}
 ]
 
 # 定义应用布局
@@ -21,10 +21,19 @@ app.layout = html.Div(
             ],
             data=data,
             style_cell={
-                'whiteSpace': 'normal',  # 自动换行
-                'height': 'auto',        # 自动调整高度以适应文本换行
-                'textAlign': 'left',     # 文本左对齐
+                'textAlign': 'left',     # 所有列文本左对齐
             },
+            style_data_conditional=[
+                {
+                    'if': {'column_id': 'Column 2'},
+                    'whiteSpace': 'normal',  # 让 Column 2 自动换行
+                    'height': 'auto',        # 自动调整高度
+                },
+                {
+                    'if': {'column_id': 'Column 1'},
+                    'whiteSpace': 'nowrap',  # 让 Column 1 保持不换行
+                }
+            ],
         )
     ]
 )
