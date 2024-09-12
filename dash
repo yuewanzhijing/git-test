@@ -1,39 +1,47 @@
 import dash
 from dash import dash_table, html
+import dash_bootstrap_components as dbc
 
 # 初始化Dash应用
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # 示例数据
 data = [
-    {'Column 1': 'This is a long text that will not wrap', 'Column 2': 'This is a long text that will wrap into multiple lines automatically.'},
-    {'Column 1': 'Another long text that stays in one line', 'Column 2': 'Another long text that needs to wrap in Column 2.'}
+    {'Column 1': f'Text {i}', 'Column 2': f'Long text {i}' * 10}
+    for i in range(50)  # 生成50行示例数据
 ]
 
 # 定义应用布局
 app.layout = html.Div(
-    [
-        dash_table.DataTable(
-            id='table',
-            columns=[
-                {"name": "Column 1", "id": "Column 1"},
-                {"name": "Column 2", "id": "Column 2"},
-            ],
-            data=data,
-            style_cell={
-                'textAlign': 'left',     # 所有列文本左对齐
-            },
-            style_data_conditional=[
-                {
-                    'if': {'column_id': 'Column 2'},
-                    'whiteSpace': 'normal',  # 让 Column 2 自动换行
-                    'height': 'auto',        # 自动调整高度
-                },
-                {
-                    'if': {'column_id': 'Column 1'},
-                    'whiteSpace': 'nowrap',  # 让 Column 1 保持不换行
-                }
-            ],
+    style={'height': '100vh', 'display': 'flex', 'flexDirection': 'column'},  # 设置全屏高度的外部容器
+    children=[
+        html.Div(
+            style={'flex': '1', 'overflow': 'hidden'},  # 留出剩余空间给表格
+            children=[
+                dash_table.DataTable(
+                    id='table',
+                    columns=[
+                        {"name": "Column 1", "id": "Column 1"},
+                        {"name": "Column 2", "id": "Column 2"},
+                    ],
+                    data=data,
+                    style_table={
+                        'height': '100%',    # 占满父容器的剩余高度
+                        'overflowY': 'auto',  # 内容超出时显示滚动条
+                    },
+                    style_cell={
+                        'textAlign': 'left',  # 所有列文本左对齐
+                        'whiteSpace': 'normal',  # 自动换行
+                    },
+                    style_data_conditional=[
+                        {
+                            'if': {'column_id': 'Column 2'},
+                            'whiteSpace': 'normal',  # 让 Column 2 自动换行
+                            'height': 'auto',        # 自动调整高度
+                        },
+                    ],
+                )
+            ]
         )
     ]
 )
